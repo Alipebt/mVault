@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a84ff">
+<title>记忆库</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <!-- 主界面：四 Tab -->
+  <section id="screen-main" class="screen active">
+    <header>
+      <h1 id="main-title">记录今天</h1>
+    </header>
+
+    <!-- Tab: 记录今天 -->
+    <div id="page-quick" class="tab-page active">
+      <div class="card">
+        <h2>记录今天</h2>
+        <input type="date" id="quick-date">
+        <textarea id="quick-text" placeholder="今天发生了什么？一段或几段，空行分隔…" rows="6"></textarea>
+        <div class="row">
+          <button id="quick-preview" class="primary" style="flex:1">生成链接</button>
+          <button id="quick-apply" class="primary hidden" style="flex:1">确认落盘</button>
+        </div>
+      </div>
+      <div id="quick-result" class="card hidden">
+        <h3>链接预览</h3>
+        <div id="quick-links"></div>
+      </div>
+    </div>
+
+    <!-- Tab: 记忆库 -->
+    <div id="page-browse" class="tab-page">
+      <div class="card">
+        <div class="row" style="align-items:center">
+          <h2 style="flex:1">记忆库</h2>
+          <button id="browse-refresh" class="ghost">刷新</button>
+        </div>
+        <div class="browse-stats muted" id="browse-stats"></div>
+        <div class="row" style="margin-top:8px">
+          <select id="browse-year" style="flex:1">
+            <option value="">全部年份</option>
+          </select>
+        </div>
+        <div id="browse-list"></div>
+        <div class="pager" id="browse-pager">
+          <button id="page-prev" class="ghost">‹ 上一页</button>
+          <span id="page-info" class="muted">1/1</span>
+          <button id="page-next" class="ghost">下一页 ›</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: git 同步 -->
+    <div id="page-git" class="tab-page">
+      <div class="card">
+        <div class="row" style="align-items:center">
+          <h2 style="flex:1">git 同步</h2>
+          <button id="git-refresh" class="ghost">刷新</button>
+        </div>
+        <div id="git-status" class="muted" style="margin-bottom:8px"></div>
+        <div class="row">
+          <button id="btn-commit" class="primary" style="flex:1">提交改动</button>
+          <button id="btn-push" class="primary" style="flex:1">推送</button>
+        </div>
+      </div>
+
+      <!-- 落盘历史 -->
+      <div class="card">
+        <h2>落盘记录</h2>
+        <div id="undo-info" class="muted" style="margin-bottom:8px">加载中…</div>
+        <div id="commit-history"></div>
+      </div>
+
+      <!-- 撤回 / 重做 -->
+      <div class="card">
+        <h2>撤回</h2>
+        <div class="row">
+          <button id="btn-undo" class="danger" disabled style="flex:1">↩ 撤回上一次</button>
+          <button id="btn-redo" class="ghost" disabled style="flex:1">↪ 取消撤回</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: 设置 -->
+    <div id="page-settings" class="tab-page">
+      <!-- 连接配置（始终显示，可改） -->
+      <div class="card">
+        <h2>连接仓库</h2>
+        <div id="settings-conn-state" class="muted" style="margin-bottom:8px"></div>
+        <label class="lbl">GitHub 仓库 URL</label>
+        <input id="repo-url" placeholder="https://github.com/用户名/记忆库.git">
+        <label class="lbl">GitHub Token（有仓库读写权限）</label>
+        <input id="token" type="password" placeholder="ghp_xxx" autocomplete="off">
+        <label class="lbl">CORS 代理（默认官方代理，浏览器访问 GitHub 必需）</label>
+        <input id="cors-proxy" placeholder="https://cors.isomorphic-git.org">
+        <div class="muted" style="margin:6px 0 10px">Token 仅存于本机浏览器，用于 clone/push。GitHub 对浏览器 git 请求有 CORS 限制，需经代理转发。</div>
+        <button id="btn-connect" class="primary">连接仓库</button>
+        <div id="setup-msg" class="msg muted"></div>
+      </div>
+
+      <!-- 数据与缓存 -->
+      <div class="card">
+        <h2>数据</h2>
+        <div class="muted" style="margin-bottom:12px">
+          数据保存在浏览器本地（IndexedDB），GitHub 为同步枢纽。
+        </div>
+        <div class="row">
+          <button id="btn-clear-cache" class="danger" style="flex:1">清除缓存并重新连接</button>
+        </div>
+        <div id="settings-msg" class="msg muted"></div>
+      </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <nav class="tabbar">
+      <button class="tab-btn active" data-tab="quick">
+        <span class="tab-icon">✏️</span><span>记录</span>
+      </button>
+      <button class="tab-btn" data-tab="browse">
+        <span class="tab-icon">📚</span><span>记忆库</span>
+      </button>
+      <button class="tab-btn" data-tab="git">
+        <span class="tab-icon">🔄</span><span>git</span>
+      </button>
+      <button class="tab-btn" data-tab="settings">
+        <span class="tab-icon">⚙️</span><span>设置</span>
+      </button>
+    </nav>
+  </section>
+</div>
+<script type="module" src="app.bundle.js"></script>
+</body>
+</html>

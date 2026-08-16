@@ -1,0 +1,16 @@
+# 依赖
+node_modules/
+
+# 构建产物（GitHub Actions 自动生成）
+dist-pwa/
+
+# 运行时配置（含本地记忆库路径）
+vault-config.json
+
+# 日志
+*.log
+
+# 系统
+.DS_Store
+Thumbs.db
+.idea/
