@@ -103,6 +103,58 @@ export function findDateSections(content, dateStr) {
   return sections;
 }
 
+// 替换日记中某日期节的内容。
+// content：整个日记文件内容；date：YYYY-MM-DD；newBody：该日期的新正文（多段以空行分隔，不含标题行）。
+// 返回新文件内容；若该日期节不存在则返回 null。
+// 保留节内已有的块 ID 后缀（^xxx）：新正文段落若不带块 ID，会尝试匹配保留原 ID。
+export function replaceDateSection(content, date, newBody) {
+  const { body } = parseFrontmatter(content);
+  const lines = body.split('\n');
+  // 找 ## date 标题行
+  const headRe = new RegExp(`^##\\s+${date}\\s*$`);
+  const headIdx = lines.findIndex((l) => headRe.test(l.trim()));
+  if (headIdx === -1) return null;
+  // 找节结束（下一个 ## 标题或文件末尾）
+  let endIdx = lines.length;
+  for (let i = headIdx + 1; i < lines.length; i++) {
+    if (/^##\s/.test(lines[i])) { endIdx = i; break; }
+  }
+  // 收集该节原有的块 ID（段落后缀 ^xxx），用于匹配保留
+  const oldIds = [];
+  for (let i = headIdx + 1; i < endIdx; i++) {
+    const m = lines[i].match(/\s+\^([a-z][a-z0-9-]*)\s*$/);
+    if (m) oldIds.push(m[1]);
+  }
+  // 新段落：把用户输入的正文切成段落，空行分隔
+  const paras = String(newBody).split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+  const newSection = paras.length
+    ? paras.map((p, i) => {
+        // 若段落本身没带块 ID，且还有可用旧 ID，则补上（保持回忆嵌入有效）
+        if (!/\s+\^[a-z][a-z0-9-]*\s*$/.test(p) && oldIds.length > 0 && i < oldIds.length) {
+          return `${p} ^${oldIds[i]}`;
+        }
+        return p;
+      }).join('\n\n')
+    : '';
+  // 重新组装：标题 + 空行 + 新内容 + 后续
+  const out = [...lines.slice(0, headIdx + 1)];
+  if (newSection) {
+    out.push('');
+    out.push(...newSection.split('\n'));
+  }
+  out.push(...lines.slice(endIdx));
+  // 压缩连续空行
+  const result = [];
+  let prevBlank = false;
+  for (const l of out) {
+    const blank = l.trim() === '';
+    if (blank && prevBlank) continue;
+    result.push(l);
+    prevBlank = blank;
+  }
+  return result.join('\n');
+}
+
 // 把 frontmatter 的指定字段改为新值，其余行逐字节保留；返回 { fmText, body }。
 // 目的：改写已有页面（日记/人物/回忆）时，只产生 `updated` 一行 diff，
 // 避免 serializeFrontmatter 整体重排导致的 diff 噪音。
@@ -123,4 +175,4 @@ export function bumpUpdated(content, date) {
   return fmText ? fmText + body : content;
 }
 
-export default { parseFrontmatter, serializeFrontmatter, quoteYamlValue, parseDiary, findDateSections, setFrontmatterField, bumpUpdated };
+export default { parseFrontmatter, serializeFrontmatter, quoteYamlValue, parseDiary, findDateSections, setFrontmatterField, bumpUpdated, replaceDateSection };

@@ -36,22 +36,44 @@
 
     <!-- Tab: 记忆库 -->
     <div id="page-browse" class="tab-page">
-      <div class="card">
-        <div class="row" style="align-items:center">
-          <h2 style="flex:1">记忆库</h2>
-          <button id="browse-refresh" class="ghost">刷新</button>
+      <!-- 列表视图 -->
+      <div id="browse-view-list">
+        <div class="card">
+          <div class="row" style="align-items:center">
+            <h2 style="flex:1">记忆库</h2>
+            <button id="browse-refresh" class="ghost">刷新</button>
+          </div>
+          <div class="browse-stats muted" id="browse-stats"></div>
+          <div class="row" style="margin-top:8px">
+            <select id="browse-year" style="flex:1">
+              <option value="">全部年份</option>
+            </select>
+          </div>
+          <div id="browse-list"></div>
+          <div class="pager" id="browse-pager">
+            <button id="page-prev" class="ghost">‹ 上一页</button>
+            <span id="page-info" class="muted">1/1</span>
+            <button id="page-next" class="ghost">下一页 ›</button>
+          </div>
         </div>
-        <div class="browse-stats muted" id="browse-stats"></div>
-        <div class="row" style="margin-top:8px">
-          <select id="browse-year" style="flex:1">
-            <option value="">全部年份</option>
-          </select>
+      </div>
+
+      <!-- 日期详情视图（编辑 + 历史） -->
+      <div id="browse-view-detail" class="hidden">
+        <div class="card">
+          <div class="row" style="align-items:center">
+            <button id="detail-back" class="ghost">‹ 返回</button>
+            <h2 id="detail-title" style="flex:1;margin-left:8px">日期</h2>
+          </div>
+          <textarea id="detail-content" rows="10" placeholder="该日期的内容…" style="margin-top:8px"></textarea>
+          <div class="row" style="margin-top:8px">
+            <button id="detail-save" class="primary" style="flex:1">保存修改</button>
+          </div>
+          <div id="detail-msg" class="msg muted"></div>
         </div>
-        <div id="browse-list"></div>
-        <div class="pager" id="browse-pager">
-          <button id="page-prev" class="ghost">‹ 上一页</button>
-          <span id="page-info" class="muted">1/1</span>
-          <button id="page-next" class="ghost">下一页 ›</button>
+        <div class="card">
+          <h2>修改历史</h2>
+          <div id="detail-history" class="muted">加载中…</div>
         </div>
       </div>
     </div>

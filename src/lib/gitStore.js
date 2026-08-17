@@ -156,6 +156,21 @@ export async function log(fs, depth = 10, dir = REPO_DIR) {
   } catch { return []; }
 }
 
+// 某文件的修改历史（按文件过滤的 commit 列表）
+// relPath：相对仓库根的路径，如 记忆/日记/2026.md
+// 返回 [{ oid, message, timestamp, author }]（新→旧）
+export async function fileHistory(fs, relPath, depth = 20, dir = REPO_DIR) {
+  try {
+    const commits = await git.log({ fs, dir, filepath: relPath, depth });
+    return commits.map((c) => ({
+      oid: c.oid,
+      message: c.commit.message,
+      timestamp: c.commit.committer.timestamp,
+      author: c.commit.author ? c.commit.author.name : 'unknown',
+    }));
+  } catch { return []; }
+}
+
 // ===== 撤回 / 重做 / squash 推送 =====
 
 // 获取"远端基准之后的本地 commit 栈"。
@@ -243,4 +258,4 @@ export async function squashPush(fs, { token, corsProxy, remote = 'origin', ref 
   return { pushedSha: squashOid, baseOid };
 }
 
-export default { getFs, getRepoDir, isRepoReady, cloneRepo, initRepo, status, readFile, writeFile, commitAll, push, pull, log, mkdirp, DEFAULT_CORS_PROXY, getLocalCommits, undoToCommit, redoToCommit, squashPush, resetFs };
+export default { getFs, getRepoDir, isRepoReady, cloneRepo, initRepo, status, readFile, writeFile, commitAll, push, pull, log, fileHistory, mkdirp, DEFAULT_CORS_PROXY, getLocalCommits, undoToCommit, redoToCommit, squashPush, resetFs };

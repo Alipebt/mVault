@@ -7,6 +7,7 @@ import { createProposal } from '../src/lib/linkEngine.js';
 import { applyProposal } from '../src/lib/applier.js';
 import { indexVault } from '../src/lib/vaultIndex.js';
 import { loadEntityDict } from '../src/lib/entityDict.js';
+import { replaceDateSection, parseFrontmatter } from '../src/lib/markdown.js';
 
 const $ = (id) => document.getElementById(id);
 const STORAGE_KEY = 'memory-graph-config';
@@ -222,18 +223,106 @@ function renderBrowseList(idx) {
 
   $('browse-list').innerHTML = pageEntries.length
     ? pageEntries.map((e) => `
-      <div class="entry">
+      <div class="entry" data-date="${e.date}" data-file="${escapeHtml(e.file)}">
         <div class="date">${e.date}</div>
         <div class="preview">${escapeHtml(e.paras[0] || '')}</div>
-        <div class="meta">${e.paras.length} 段</div>
+        <div class="meta">${e.paras.length} 段 · 点按编辑</div>
       </div>`).join('')
     : '<div class="muted">该年份暂无日记</div>';
+
+  // 条目点击 → 打开详情视图
+  $('browse-list').querySelectorAll('.entry').forEach((el) => {
+    el.addEventListener('click', () => openDateDetail(el.dataset.date, el.dataset.file));
+  });
 
   // 分页信息
   $('page-info').textContent = total ? `${browseState.page}/${totalPages}` : '0/0';
   $('page-prev').disabled = browseState.page <= 1;
   $('page-next').disabled = browseState.page >= totalPages;
 }
+
+// ===== 日期详情视图（编辑 + 修改历史） =====
+let currentDetail = null; // { date, file }
+
+async function openDateDetail(date, file) {
+  currentDetail = { date, file };
+  $('detail-title').textContent = date;
+  // 读取该日期节的原始内容
+  try {
+    const full = await gitStore.readFile(gitStore.getFs(), file);
+    const { body } = parseFrontmatter(full);
+    // 提取该日期节的段落（不含标题，还原块 ID 为正常文本）
+    const paras = [];
+    const lines = body.split('\n');
+    let inSection = false;
+    for (const line of lines) {
+      const m = line.match(/^##\s+(\d{4}-\d{2}-\d{2})\s*$/);
+      if (m) {
+        if (inSection) break; // 已读完当前节
+        if (m[1] === date) inSection = true;
+        continue;
+      }
+      if (inSection && line.trim() && !/^#/.test(line)) paras.push(line.trim());
+    }
+    $('detail-content').value = paras.join('\n\n');
+    $('detail-msg').textContent = '';
+    // 切到详情视图
+    $('browse-view-list').classList.add('hidden');
+    $('browse-view-detail').classList.remove('hidden');
+    loadDetailHistory();
+  } catch (e) {
+    alert('读取失败：' + (e.message || '未知错误'));
+  }
+}
+
+// 加载该文件的修改历史（git log 按文件过滤）
+async function loadDetailHistory() {
+  if (!currentDetail) return;
+  $('detail-history').innerHTML = '<span class="muted">加载中…</span>';
+  try {
+    const hist = await gitStore.fileHistory(gitStore.getFs(), currentDetail.file, 20);
+    $('detail-history').innerHTML = hist.length
+      ? hist.map((h) => {
+          const d = new Date(h.timestamp * 1000);
+          const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+          return `<div class="commit-row">
+            <span class="commit-dot">●</span>
+            <span class="commit-msg">${escapeHtml(h.message.trim())}</span>
+            <span class="muted">${ds}</span>
+          </div>`;
+        }).join('')
+      : '<div class="muted">暂无修改历史</div>';
+  } catch {
+    $('detail-history').innerHTML = '<div class="muted">暂无修改历史</div>';
+  }
+}
+
+$('detail-back').addEventListener('click', () => {
+  currentDetail = null;
+  $('browse-view-detail').classList.add('hidden');
+  $('browse-view-list').classList.remove('hidden');
+});
+
+// 保存修改：替换该日期节 → 写回文件 → 自动 commit
+$('detail-save').addEventListener('click', async () => {
+  if (!currentDetail) return;
+  const newBody = $('detail-content').value;
+  try {
+    const fs = gitStore.getFs();
+    const full = await gitStore.readFile(fs, currentDetail.file);
+    const replaced = replaceDateSection(full, currentDetail.date, newBody);
+    if (replaced === null) { alert('该日期不存在，无法修改'); return; }
+    // 写回文件（相对仓库根）
+    await gitStore.writeFile(fs, currentDetail.file, replaced);
+    // 自动 commit（留下修改历史）
+    await gitStore.commitAll(fs, { message: `修改 ${currentDetail.date}`, name: 'memory-app', email: 'app@local' });
+    $('detail-msg').textContent = '✅ 已保存并提交';
+    loadDetailHistory();
+    loadIndex(); // 刷新列表
+  } catch (e) {
+    alert('保存失败：' + (e.message || '未知错误'));
+  }
+});
 
 $('page-prev').addEventListener('click', () => {
   if (browseState.page > 1) { browseState.page--; if (window._idx) renderBrowseList(window._idx); }

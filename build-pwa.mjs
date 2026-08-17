@@ -10,11 +10,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = __dirname;
 const OUT = path.resolve(APP_ROOT, 'dist-pwa');
 
-// 清空输出目录
-if (fs.existsSync(OUT)) fs.rmSync(OUT, { recursive: true, force: true });
-fs.mkdirSync(OUT, { recursive: true });
+// 确保输出目录存在（不强制删除整个目录——挂载目录可能不允许 rm）
+if (!fs.existsSync(OUT)) fs.mkdirSync(OUT, { recursive: true });
 
-// 复制静态资源
+// 复制静态资源（覆盖同名文件）
 for (const f of ['index.html', 'style.css', 'manifest.json']) {
   fs.copyFileSync(path.join(APP_ROOT, 'pwa', f), path.join(OUT, f));
 }
