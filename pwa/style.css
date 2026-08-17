@@ -83,3 +83,17 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 /* ===== 日期详情只读展示 ===== */
 .detail-body { line-height: 1.7; }
 .detail-para { font-size: 14px; color: #1d1d1f; margin-bottom: 10px; white-space: pre-wrap; }
+
+/* ===== 分段切换（日记/人物/回忆） ===== */
+.seg { display: flex; gap: 6px; background: #e5e5ea; border-radius: 10px; padding: 4px; margin: 8px 0; }
+.seg-btn { flex: 1; padding: 8px; border: none; border-radius: 8px; background: transparent; font-size: 14px; cursor: pointer; color: #48484a; }
+.seg-btn.active { background: #fff; color: #0a84ff; font-weight: 600; }
+.browse-seg { }
+.person-item, .stage-item { display: flex; align-items: center; gap: 10px; padding: 10px 4px; border-bottom: 1px solid #f0f0f2; cursor: pointer; }
+.person-item .avatar, .stage-item .avatar { width: 34px; height: 34px; border-radius: 50%; background: #0a84ff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; flex-shrink: 0; }
+.person-item .info, .stage-item .info { flex: 1; }
+.person-item .name, .stage-item .name { font-size: 15px; }
+.person-item .sub, .stage-item .sub { font-size: 12px; color: #86868b; }
+/* 人物链接高亮 */
+.link-person { color: #0a84ff; font-weight: 500; text-decoration: underline; cursor: pointer; }
+.link-date { color: #0a84ff; cursor: pointer; }

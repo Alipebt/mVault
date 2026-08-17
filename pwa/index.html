@@ -36,11 +36,18 @@
 
     <!-- Tab: 记忆库 -->
     <div id="page-browse" class="tab-page">
-      <!-- 列表视图 -->
-      <div id="browse-view-list">
+      <!-- 类型切换：日记 / 人物 / 回忆 -->
+      <div class="seg">
+        <button class="seg-btn active" data-seg="diary">日记</button>
+        <button class="seg-btn" data-seg="people">人物</button>
+        <button class="seg-btn" data-seg="recollection">回忆</button>
+      </div>
+
+      <!-- 日记列表视图 -->
+      <div id="browse-seg-diary" class="browse-seg">
         <div class="card">
           <div class="row" style="align-items:center">
-            <h2 style="flex:1">记忆库</h2>
+            <h2 style="flex:1">日记</h2>
             <button id="browse-refresh" class="ghost">刷新</button>
           </div>
           <div class="browse-stats muted" id="browse-stats"></div>
@@ -58,17 +65,33 @@
         </div>
       </div>
 
-      <!-- 日期详情视图（展示 + 编辑 + 历史） -->
+      <!-- 人物列表视图 -->
+      <div id="browse-seg-people" class="browse-seg hidden">
+        <div class="card">
+          <h2>人物</h2>
+          <div id="people-list"></div>
+        </div>
+      </div>
+
+      <!-- 回忆列表视图 -->
+      <div id="browse-seg-recollection" class="browse-seg hidden">
+        <div class="card">
+          <h2>回忆</h2>
+          <div id="recollection-stages"></div>
+        </div>
+      </div>
+
+      <!-- 通用详情视图（日记日期 / 人物 / 回忆阶段） -->
       <div id="browse-view-detail" class="hidden">
         <div class="card">
           <div class="row" style="align-items:center">
             <button id="detail-back" class="ghost">‹ 返回</button>
-            <h2 id="detail-title" style="flex:1;margin-left:8px">日期</h2>
-            <button id="detail-edit" class="primary">修改</button>
+            <h2 id="detail-title" style="flex:1;margin-left:8px">标题</h2>
+            <button id="detail-edit" class="primary hidden">修改</button>
           </div>
           <!-- 只读展示（默认） -->
           <div id="detail-view" class="detail-body" style="margin-top:8px"></div>
-          <!-- 编辑框（点"修改"后显示） -->
+          <!-- 编辑框（日记日期修改用） -->
           <div id="detail-editor" class="hidden">
             <textarea id="detail-content" rows="10" placeholder="该日期的内容…" style="margin-top:8px"></textarea>
             <div class="row" style="margin-top:8px">
