@@ -79,3 +79,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .commit-row.redo { opacity: .6; }
 .commit-row.redo .commit-dot { color: #86868b; }
 .commit-row .commit-msg { flex: 1; word-break: break-all; }
+
+/* ===== 日期详情只读展示 ===== */
+.detail-body { line-height: 1.7; }
+.detail-para { font-size: 14px; color: #1d1d1f; margin-bottom: 10px; white-space: pre-wrap; }

@@ -58,16 +58,23 @@
         </div>
       </div>
 
-      <!-- 日期详情视图（编辑 + 历史） -->
+      <!-- 日期详情视图（展示 + 编辑 + 历史） -->
       <div id="browse-view-detail" class="hidden">
         <div class="card">
           <div class="row" style="align-items:center">
             <button id="detail-back" class="ghost">‹ 返回</button>
             <h2 id="detail-title" style="flex:1;margin-left:8px">日期</h2>
+            <button id="detail-edit" class="primary">修改</button>
           </div>
-          <textarea id="detail-content" rows="10" placeholder="该日期的内容…" style="margin-top:8px"></textarea>
-          <div class="row" style="margin-top:8px">
-            <button id="detail-save" class="primary" style="flex:1">保存修改</button>
+          <!-- 只读展示（默认） -->
+          <div id="detail-view" class="detail-body" style="margin-top:8px"></div>
+          <!-- 编辑框（点"修改"后显示） -->
+          <div id="detail-editor" class="hidden">
+            <textarea id="detail-content" rows="10" placeholder="该日期的内容…" style="margin-top:8px"></textarea>
+            <div class="row" style="margin-top:8px">
+              <button id="detail-save" class="primary" style="flex:1">保存修改</button>
+              <button id="detail-cancel" class="ghost" style="flex:1">取消</button>
+            </div>
           </div>
           <div id="detail-msg" class="msg muted"></div>
         </div>

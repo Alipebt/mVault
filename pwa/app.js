@@ -226,7 +226,7 @@ function renderBrowseList(idx) {
       <div class="entry" data-date="${e.date}" data-file="${escapeHtml(e.file)}">
         <div class="date">${e.date}</div>
         <div class="preview">${escapeHtml(e.paras[0] || '')}</div>
-        <div class="meta">${e.paras.length} 段 · 点按编辑</div>
+        <div class="meta">${e.paras.length} 段</div>
       </div>`).join('')
     : '<div class="muted">该年份暂无日记</div>';
 
@@ -241,39 +241,93 @@ function renderBrowseList(idx) {
   $('page-next').disabled = browseState.page >= totalPages;
 }
 
-// ===== 日期详情视图（编辑 + 修改历史） =====
+// ===== 日期详情视图（展示 + 编辑 + 修改历史） =====
 let currentDetail = null; // { date, file }
+let detailData = null;    // 当前展示的段落数组
 
+// 进入详情：压入浏览器历史（支持侧滑返回）
 async function openDateDetail(date, file) {
   currentDetail = { date, file };
   $('detail-title').textContent = date;
-  // 读取该日期节的原始内容
   try {
     const full = await gitStore.readFile(gitStore.getFs(), file);
     const { body } = parseFrontmatter(full);
-    // 提取该日期节的段落（不含标题，还原块 ID 为正常文本）
+    // 提取该日期节的段落（不含标题，去掉块 ID 后缀用于展示）
     const paras = [];
     const lines = body.split('\n');
     let inSection = false;
     for (const line of lines) {
       const m = line.match(/^##\s+(\d{4}-\d{2}-\d{2})\s*$/);
       if (m) {
-        if (inSection) break; // 已读完当前节
+        if (inSection) break;
         if (m[1] === date) inSection = true;
         continue;
       }
-      if (inSection && line.trim() && !/^#/.test(line)) paras.push(line.trim());
+      if (inSection && line.trim() && !/^#/.test(line)) {
+        // 去掉行尾块 ID 用于展示（^xxx）
+        paras.push(line.trim().replace(/\s+\^[a-z][a-z0-9-]*\s*$/, ''));
+      }
     }
-    $('detail-content').value = paras.join('\n\n');
-    $('detail-msg').textContent = '';
-    // 切到详情视图
+    detailData = paras;
+    // 默认只读展示
+    showDetailReadonly();
+    // 切到详情视图 + 压入历史栈
     $('browse-view-list').classList.add('hidden');
     $('browse-view-detail').classList.remove('hidden');
+    history.pushState({ detail: { date, file } }, '');
     loadDetailHistory();
   } catch (e) {
     alert('读取失败：' + (e.message || '未知错误'));
   }
 }
+
+// 只读展示（段落渲染为 HTML）
+function showDetailReadonly() {
+  $('detail-editor').classList.add('hidden');
+  $('detail-view').classList.remove('hidden');
+  $('detail-msg').textContent = '';
+  $('detail-view').innerHTML = detailData && detailData.length
+    ? detailData.map((p) => `<p class="detail-para">${escapeHtml(p)}</p>`).join('')
+    : '<div class="muted">该日期暂无内容</div>';
+}
+
+// 编辑模式（点击"修改"）
+function showDetailEditor() {
+  $('detail-view').classList.add('hidden');
+  $('detail-editor').classList.remove('hidden');
+  $('detail-msg').textContent = '';
+  $('detail-content').value = (detailData || []).join('\n\n');
+}
+
+// 返回列表（恢复浏览器历史，使侧滑返回也能生效）
+function closeDetail() {
+  currentDetail = null;
+  detailData = null;
+  $('browse-view-detail').classList.add('hidden');
+  $('browse-view-list').classList.remove('hidden');
+}
+
+$('detail-back').addEventListener('click', () => {
+  // 若正在编辑，先退出编辑模式；否则返回列表
+  if (!$('detail-editor').classList.contains('hidden')) {
+    showDetailReadonly();
+  } else if (window.history.length > 1) {
+    history.back();
+  } else {
+    closeDetail();
+  }
+});
+
+// 浏览器返回（侧滑/物理键）→ 回到列表
+window.addEventListener('popstate', () => {
+  closeDetail();
+});
+
+// 点"修改"进入编辑
+$('detail-edit').addEventListener('click', showDetailEditor);
+
+// 取消编辑
+$('detail-cancel').addEventListener('click', showDetailReadonly);
 
 // 加载该文件的修改历史（git log 按文件过滤）
 async function loadDetailHistory() {
@@ -316,6 +370,10 @@ $('detail-save').addEventListener('click', async () => {
     await gitStore.writeFile(fs, currentDetail.file, replaced);
     // 自动 commit（留下修改历史）
     await gitStore.commitAll(fs, { message: `修改 ${currentDetail.date}`, name: 'memory-app', email: 'app@local' });
+    // 更新展示数据并回到只读模式
+    const paras = newBody.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+    detailData = paras;
+    showDetailReadonly();
     $('detail-msg').textContent = '✅ 已保存并提交';
     loadDetailHistory();
     loadIndex(); // 刷新列表
