@@ -347,7 +347,7 @@ async function openPersonDetail(name) {
       : '<div class="muted">暂无日记提及</div>';
     detailData = { html, matches };
     showDetailReadonly();
-    $('browse-view-list').classList.add('hidden');
+    hideCurrentList();
     $('browse-view-detail').classList.remove('hidden');
     // 绑定日期跳转
     $('detail-view').querySelectorAll('[data-date]').forEach((el) => {
@@ -418,7 +418,7 @@ async function openRecollectionStage(stage) {
     }
     detailData = { html, items };
     showDetailReadonly();
-    $('browse-view-list').classList.add('hidden');
+    hideCurrentList();
     $('browse-view-detail').classList.remove('hidden');
     history.pushState({ detail: { type: 'recollection', stage } }, '');
   } catch (e) {
@@ -440,6 +440,13 @@ function switchSeg(seg) {
   $(map[seg]).classList.remove('hidden');
   if (seg === 'people' && window._idx) renderPeopleList(window._idx);
   if (seg === 'recollection' && window._idx) renderRecollectionStages(window._idx);
+}
+
+// 隐藏当前 seg 的列表（进入详情时调用）
+function hideCurrentList() {
+  const map = { diary: 'browse-seg-diary', people: 'browse-seg-people', recollection: 'browse-seg-recollection' };
+  const el = $(map[currentSeg] || 'browse-seg-diary');
+  if (el) el.classList.add('hidden');
 }
 
 // ===== 通用详情视图（日记日期 / 人物 / 回忆） =====
