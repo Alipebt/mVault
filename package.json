@@ -5,12 +5,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node src/dev-server.js",
     "build:pwa": "node build-pwa.mjs",
     "test": "node --test src/test/linkEngine.test.js src/test/vaultIndex.test.js src/test/applier.test.js src/test/gitClient.test.js src/test/fsCompat.test.js"
   },
   "dependencies": {
     "@isomorphic-git/lightning-fs": "^4.7.0",
+    "buffer": "^6.0.3",
     "isomorphic-git": "^1.29.0",
     "pinyin-pro": "^3.26.0"
   },

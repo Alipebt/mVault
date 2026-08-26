@@ -3,7 +3,7 @@
 //
 // isomorphic-git 需要完整的 fs API（readFile/writeFile/unlink/rmdir/readdir/mkdir/stat 等）。
 // Node 环境下：若调用方传入完整 fs（有 stat/unlink/readdir）则直接用；
-// 否则退化为 node:fs（保证 dev-server / 测试里 git 操作真实可用）。
+// 否则退化为 node:fs（保证测试里 git 操作真实可用）。
 //
 // 沿用"先预览后确认"：所有写操作（commit/push/pull/discard）只返回"将要做什么"，由 UI 确认后执行。
 
@@ -14,7 +14,7 @@ function isGitFs(fs) {
   return fs && typeof fs.stat === 'function' && typeof fs.unlink === 'function' && typeof fs.readdir === 'function';
 }
 
-// 解析传入的 fs：非完整 git fs（如 dev-server 的瘦 nodeFs）时退化为 node:fs
+// 解析传入的 fs：非完整 git fs 时退化为 node:fs
 function resolveFs(fs) {
   if (isGitFs(fs)) return fs;
   return nodeFs;

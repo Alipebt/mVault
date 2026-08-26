@@ -3,7 +3,7 @@
 // 上层代码（linkEngine / vaultIndex / entityDict / personFactory / applier）
 // 习惯调用 fs.listDir / fs.readFile / fs.writeFile / fs.exists / fs.mkdir，
 // 但实际传入的 fs 实现可能是：
-//   1. 自定义瘦适配器（有 listDir，返回 Promise）——dev-server / 测试 fixture
+//   1. 自定义瘦适配器（有 listDir，返回 Promise）——测试 fixture
 //   2. node:fs/promises（只有 readdir，返回 Promise）
 //   3. node:fs callback 风格（只有 readdir，回调式）
 //   4. Capacitor 插件封装（有 listDir，返回 Promise）

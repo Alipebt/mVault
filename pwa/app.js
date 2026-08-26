@@ -111,12 +111,6 @@ function showNotConnected(tab) {
     browse: '请先在"设置"里连接 GitHub 仓库',
     git: '请先在"设置"里连接 GitHub 仓库',
   };
-  const targets = {
-    quick: ['quick-text', 'quick-preview', 'quick-apply', 'quick-date'],
-    browse: ['browse-list', 'browse-stats', 'browse-year', 'browse-refresh'],
-    git: ['btn-commit', 'btn-push', 'git-status', 'undo-info', 'commit-history', 'btn-undo', 'btn-redo', 'git-refresh'],
-  };
-  if (targets[tab]) targets[tab].forEach((id) => { const el = $(id); if (el) el.innerHTML = el.innerHTML; });
   // 显示提示
   if (tab === 'quick') $('quick-links').innerHTML = `<div class="muted">${map[tab]}</div>`;
   if (tab === 'browse') $('browse-list').innerHTML = `<div class="muted">${map[tab]}</div>`;
@@ -671,7 +665,6 @@ async function refreshUndoStack() {
 
 // 渲染"落盘记录"：显示每次落盘（commit 节点）
 function renderCommitHistory() {
-  const all = [...undoStack, ...redoStack].sort((a, b) => (a.oid === b.oid ? 0 : 0)); // 保持原顺序展示
   if (!undoStack.length && !redoStack.length) {
     $('commit-history').innerHTML = '<div class="muted">暂无本地落盘记录（提交推送后即同步到 GitHub）</div>';
     return;

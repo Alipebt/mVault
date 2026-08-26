@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0a84ff">
-<title>记忆库</title>
+<meta name="theme-color" content="#f2f2f7">
+<meta name="color-scheme" content="light dark">
+<title>记忆库 · Memory Vault</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
 <link rel="stylesheet" href="style.css">
@@ -170,22 +171,39 @@
     </div>
 
     <!-- 底部导航 -->
-    <nav class="tabbar">
-      <button class="tab-btn active" data-tab="quick">
-        <span class="tab-icon">✏️</span><span>记录</span>
+    <nav class="tabbar" aria-label="主导航">
+      <button class="tab-btn active" data-tab="quick" aria-label="记录">
+        <span class="tab-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
+        </span><span>记录</span>
       </button>
-      <button class="tab-btn" data-tab="browse">
-        <span class="tab-icon">📚</span><span>记忆库</span>
+      <button class="tab-btn" data-tab="browse" aria-label="记忆库">
+        <span class="tab-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 6h8M8 10h8"/></svg>
+        </span><span>记忆库</span>
       </button>
-      <button class="tab-btn" data-tab="git">
-        <span class="tab-icon">🔄</span><span>git</span>
+      <button class="tab-btn" data-tab="git" aria-label="同步">
+        <span class="tab-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8.1 8.1 0 0 0-15.5-3M4 4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 3M20 20v-4h-4"/><path d="M12 8v4l2.5 1.5"/></svg>
+        </span><span>同步</span>
       </button>
-      <button class="tab-btn" data-tab="settings">
-        <span class="tab-icon">⚙️</span><span>设置</span>
+      <button class="tab-btn" data-tab="settings" aria-label="设置">
+        <span class="tab-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 1.7-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-2.4v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L8 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H6.7v-2.4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L8 8.6l1.7-1.7.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5v-.2h2.4v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.7 1.7-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2v2.4h-.2a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+        </span><span>设置</span>
       </button>
     </nav>
   </section>
 </div>
-<script type="module" src="app.bundle.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./sw.js?v=6').catch(function (err) {
+        console.warn('SW 注册失败（不影响使用）:', err.message);
+      });
+    });
+  }
+</script>
+<script type="module" src="app.bundle.js?v=6"></script>
 </body>
 </html>
