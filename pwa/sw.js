@@ -6,14 +6,14 @@
 // - HTML：network-first，避免旧版骨架被锁死。离线时回退到缓存。
 // - 其它静态资源（css/js/svg/manifest）：cache-first，断网可启动。
 
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v7';
 const CACHE_NAME = `memory-vault-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   './',
-  './index.html?v=6',
-  './style.css?v=6',
-  './manifest.json?v=6',
-  './app.bundle.js?v=6',
+  './index.html?v=7',
+  './style.css?v=7',
+  './manifest.json?v=7',
+  './app.bundle.js?v=7',
 ];
 
 // 安装：预缓存静态资源
@@ -46,10 +46,10 @@ self.addEventListener('fetch', (event) => {
       fetch(event.request).then((response) => {
         if (response.ok) {
           const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put('./index.html?v=6', clone));
+          caches.open(CACHE_NAME).then((cache) => cache.put('./index.html?v=7', clone));
         }
         return response;
-      }).catch(() => caches.match('./index.html?v=6'))
+      }).catch(() => caches.match('./index.html?v=7'))
     );
     return;
   }

@@ -47,8 +47,12 @@
       <!-- 日记列表视图 -->
       <div id="browse-seg-diary" class="browse-seg">
         <div class="card">
-          <div class="row" style="align-items:center">
-            <h2 style="flex:1">日记</h2>
+          <div class="seg-head">
+            <span class="seg-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </span>
+            <h2>日记</h2>
+            <span class="seg-count" id="seg-count-diary"></span>
             <button id="browse-refresh" class="ghost">刷新</button>
           </div>
           <div class="browse-stats muted" id="browse-stats"></div>
@@ -69,7 +73,13 @@
       <!-- 人物列表视图 -->
       <div id="browse-seg-people" class="browse-seg hidden">
         <div class="card">
-          <h2>人物</h2>
+          <div class="seg-head">
+            <span class="seg-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+            </span>
+            <h2>人物</h2>
+            <span class="seg-count" id="seg-count-people"></span>
+          </div>
           <div id="people-list"></div>
         </div>
       </div>
@@ -77,7 +87,13 @@
       <!-- 回忆列表视图 -->
       <div id="browse-seg-recollection" class="browse-seg hidden">
         <div class="card">
-          <h2>回忆</h2>
+          <div class="seg-head">
+            <span class="seg-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9Z"/></svg>
+            </span>
+            <h2>回忆</h2>
+            <span class="seg-count" id="seg-count-recollection"></span>
+          </div>
           <div id="recollection-stages"></div>
         </div>
       </div>
@@ -198,12 +214,12 @@
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('./sw.js?v=6').catch(function (err) {
+      navigator.serviceWorker.register('./sw.js?v=7').catch(function (err) {
         console.warn('SW 注册失败（不影响使用）:', err.message);
       });
     });
   }
 </script>
-<script type="module" src="app.bundle.js?v=6"></script>
+<script type="module" src="app.bundle.js?v=7"></script>
 </body>
 </html>

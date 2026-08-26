@@ -48,8 +48,8 @@ await build({
 // 修正 index.html 引用为带版本号的 bundle，避免旧 Service Worker / 浏览器缓存
 // 继续返回没有 Buffer shim 的旧 bundle。
 let html = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
-html = html.replace(/app\.bundle\.js(?:\?v=\d+)?/, 'app.bundle.js?v=6');
-html = html.replace(/sw\.js(?:\?v=\d+)?/, 'sw.js?v=6');
+html = html.replace(/app\.bundle\.js(?:\?v=\d+)?/, 'app.bundle.js?v=7');
+html = html.replace(/sw\.js(?:\?v=\d+)?/, 'sw.js?v=7');
 fs.writeFileSync(path.join(OUT, 'index.html'), html);
 
 const size = fs.statSync(path.join(OUT, 'app.bundle.js')).size / 1024;

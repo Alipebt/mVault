@@ -233,6 +233,7 @@ async function loadIndex() {
     sel.value = browseState.year;
     const yearsDesc = years.join('/');
     $('browse-stats').textContent = `日记 ${idx.diary.length} 条 · 人物 ${idx.people.length} · 回忆 ${idx.recollections.length} · ${yearsDesc || '无年份'}`;
+    $('seg-count-diary').textContent = `${idx.diary.length} 条`;
     renderBrowseList(idx);
     renderPeopleList(idx);
     renderRecollectionStages(idx);
@@ -288,6 +289,7 @@ function renderBrowseList(idx) {
 // ===== 人物列表 & 详情 =====
 function renderPeopleList(idx) {
   const people = idx.people || [];
+  $('seg-count-people').textContent = `${people.length} 位`;
   $('people-list').innerHTML = people.length
     ? people.map((p) => `
       <div class="person-item" data-name="${escapeHtml(p.name)}">
@@ -355,6 +357,7 @@ async function openPersonDetail(name) {
 
 // ===== 回忆阶段列表 & 详情 =====
 function renderRecollectionStages(idx) {
+  $('seg-count-recollection').textContent = `${(idx.recollections || []).length} 条`;
   const stages = [
     { name: '学龄前', count: 0 }, { name: '幼儿园', count: 0 },
     { name: '小学', count: 0 }, { name: '初中', count: 0 },

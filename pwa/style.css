@@ -141,6 +141,9 @@ header .header-sub {
 .mt-8 { margin-top: 8px; }
 .mt-10 { margin-top: 10px; }
 
+/* 显隐工具类：JS 用 hidden 类控制分段/详情/编辑视图切换，必须置顶优先 */
+.hidden { display: none !important; }
+
 /* ---- 6. 表单 ---- */
 input, textarea, select {
   width: 100%;
@@ -221,6 +224,47 @@ button.danger { background: var(--danger); color: #fff; }
   background: var(--card);
   color: var(--accent);
   box-shadow: 0 1px 2px rgba(16, 16, 24, 0.08);
+}
+
+/* 分段区分：日记 / 人物 / 回忆 各自独立的主题色与标识，进入哪个分类一目了然 */
+.browse-seg { animation: fadeUp 0.24s var(--ease); }
+.browse-seg-diary   { --seg-accent: #4263eb; --seg-accent-soft: rgba(66, 99, 235, 0.12); }
+.browse-seg-people  { --seg-accent: #e8773f; --seg-accent-soft: rgba(232, 119, 63, 0.14); }
+.browse-seg-recollection { --seg-accent: #7a5af0; --seg-accent-soft: rgba(122, 90, 240, 0.14); }
+@media (prefers-color-scheme: dark) {
+  .browse-seg-diary   { --seg-accent: #7b93f2; }
+  .browse-seg-people  { --seg-accent: #f0956a; }
+  .browse-seg-recollection { --seg-accent: #a48ff5; }
+}
+.browse-seg > .card:first-child {
+  border-top: 3px solid var(--seg-accent);
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+}
+.browse-seg .seg-head {
+  display: flex; align-items: center; gap: 9px;
+  margin-bottom: 12px;
+}
+.browse-seg .seg-head .seg-icon {
+  display: grid; place-items: center;
+  width: 34px; height: 34px;
+  border-radius: 11px;
+  background: var(--seg-accent-soft);
+  color: var(--seg-accent);
+  flex-shrink: 0;
+}
+.browse-seg .seg-head .seg-icon svg { width: 19px; height: 19px; }
+.browse-seg .seg-head h2 {
+  flex: 1; margin-bottom: 0;
+  color: var(--seg-accent);
+}
+.browse-seg .seg-head .seg-count {
+  font-size: 12.5px; font-weight: 600;
+  color: var(--seg-accent);
+  background: var(--seg-accent-soft);
+  border-radius: 999px;
+  padding: 3px 10px;
+  flex-shrink: 0;
 }
 
 /* ---- 8. 底部导航 ---- */
